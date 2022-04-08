@@ -12,9 +12,7 @@ from keras.callbacks import ModelCheckpoint, ReduceLROnPlateau, EarlyStopping
 from keras import backend as K
 from keras.utils.vis_utils import plot_model
 import tensorflow as tf
-import glob
 import random
-import cv2
 from random import shuffle
 
 test_dir=''
