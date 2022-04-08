@@ -1,3 +1,4 @@
 # segmentation
 
-Install dependencies for the project using pip3 install requirements.txt
+Install dependencies for the project by running command:
+pip3 install requirements.txt
