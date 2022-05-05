@@ -1,6 +1,5 @@
 matplotlib
 numpy
-os
 Pillow
 tensorflow
 
