@@ -15,11 +15,13 @@ import tensorflow as tf
 import random
 from random import shuffle
 
-masks_dir=''
-image_dir=''
-model_save_dir=''  # to be used in the build_callbacks function to save the trained model
+train_masks_dir='/home/shrey/data/train/masks'
+train_image_dir='/home/shrey/data/train/images'
+val_masks_dir='/home/shrey/data/val/masks'
+val_image_dir='/home/shrey/data/val/images'
+model_save_dir='./model'  # to be used in the build_callbacks function to save the trained model
 
-def image_generator(files, batch_size = 16, sz = (256, 256)):
+def image_generator(files,masks_dir,image_dir,batch_size = 16, sz = (256, 256)):
   
   while True: 
     
@@ -34,7 +36,10 @@ def image_generator(files, batch_size = 16, sz = (256, 256)):
     for f in batch:
 
         #get the masks. Note that masks are png files 
-        mask = Image.open(masks_dir+'/{f[:-4]}png')
+        if f.split('.')[1] == 'jpeg':
+            mask = Image.open(masks_dir+'/'+f[:-4]+'png')
+        else:
+            mask = Image.open(masks_dir+'/'+f[:-3]+'png')
         mask = np.array(mask.resize(sz))
         #print(mask)
 
@@ -45,7 +50,7 @@ def image_generator(files, batch_size = 16, sz = (256, 256)):
         batch_y.append(mask)
 
         #preprocess the raw images 
-        raw = Image.open(image_dir+'/{f}')
+        raw = Image.open(image_dir+'/'+f)
         raw = raw.resize(sz)
         raw = np.array(raw)
 
@@ -171,20 +176,16 @@ class PlotLearning(keras.callbacks.Callback):
         plt.show()
 	'''
 
-
+model = unet()
 batch_size = 16
 
-image_files = os.listdir(image_dir)
-shuffle(image_files)
-
-split = int(0.95 * len(image_files))
+train_files = os.listdir(train_image_dir)
+test_files= os.listdir(val_image_dir)
 
 #split into training and testing
-train_files = image_files[0:split]
-test_files  = image_files[split:]
 
-train_generator = image_generator(train_files, batch_size = batch_size)
-test_generator  = image_generator(test_files, batch_size = batch_size)
+train_generator = image_generator(train_files,train_masks_dir,train_image_dir, batch_size = batch_size)
+test_generator  = image_generator(test_files,val_masks_dir,val_image_dir, batch_size = batch_size)
 
 train_steps = len(train_files) //batch_size
 test_steps = len(test_files) //batch_size
